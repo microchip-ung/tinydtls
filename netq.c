@@ -32,7 +32,7 @@
 LOG_MODULE_DECLARE(TINYDTLS, CONFIG_TINYDTLS_LOG_LEVEL);
 #endif /* WITH_ZEPHYR */
 
-#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION))
+#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) && !(defined (WITH_LMSTAX))
 #include <stdlib.h>
 
 static inline netq_t *
@@ -43,6 +43,18 @@ netq_malloc_node(size_t size) {
 static inline void
 netq_free_node(netq_t *node) {
   free(node);
+}
+#elif defined (WITH_LMSTAX)
+#include "lm_tinydtls.h"
+
+static inline netq_t *
+netq_malloc_node(size_t size) {
+  return (netq_t *)lm_tinydtls_mem_alloc(sizeof(netq_t) + size);
+}
+
+static inline void
+netq_free_node(netq_t *node) {
+  lm_tinydtls_mem_free(node);
 }
 
 #elif defined (WITH_CONTIKI) /* WITH_CONTIKI */

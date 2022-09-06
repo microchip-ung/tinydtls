@@ -79,6 +79,26 @@ typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 #endif
 
+#ifdef WITH_LMSTAX
+#include "lm_tinydtls.h"
+#include "lm_utils.h"
+#ifndef uthash_malloc
+#define uthash_malloc(sz) lm_tinydtls_mem_alloc(sz)
+#endif
+#ifndef uthash_free
+#define uthash_free(ptr,sz) lm_tinydtls_mem_free(ptr)
+#endif
+#ifndef uthash_bzero
+#define uthash_bzero(a,n) lmu_memset(a,'\0',n)
+#endif
+#ifndef uthash_memcmp
+#define uthash_memcmp(a,b,n) lmu_memcmp(a,b,n)
+#endif
+#ifndef uthash_strlen
+#define uthash_strlen(s) lmu_czstrlen(s)
+#endif
+#endif /* WITH_LMSTAX */
+
 #ifndef uthash_malloc
 #define uthash_malloc(sz) malloc(sz)      /* malloc fcn                      */
 #endif

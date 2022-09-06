@@ -50,7 +50,21 @@ typedef struct {
   } addr;                   /**< session IP address and port */
   int ifindex;              /**< network interface index */
 } session_t;
-#else /* ! WITH_CONTIKI && ! WITH_RIOT_SOCK */
+#elif defined(WITH_LMSTAX)
+
+#include <lm.h>
+typedef struct {
+    unsigned char  size;    /**< size of session_t::addr */
+    lm_mac_t       mac_addr;
+    struct {
+        lm_ipv4_t      ipv4_addr;
+        uint16_t       udp_port;
+    } addr;
+    lm_portno_t    sw_port;
+    lms_vlan_tag_t sw_tag;
+} session_t;
+
+#else /* ! WITH_CONTIKI && ! WITH_RIOT_SOCK && ! WITH_LMSTAX */
 
 #ifdef WITH_ZEPHYR
 #include <zephyr.h>
@@ -91,7 +105,7 @@ typedef struct {
  */
 void dtls_session_init(session_t *sess);
 
-#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION))
+#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) && !(defined (WITH_LMSTAX))
 /**
  * Creates a new ::session_t for the given address.
  *
@@ -118,7 +132,7 @@ void dtls_free_session(session_t *sess);
  * @return The address or @c NULL if @p sess was @c NULL.
  */
 struct sockaddr* dtls_session_addr(session_t *sess, socklen_t *addrlen);
-#endif /* !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) */
+#endif /* !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) && !(defined (WITH_LMSTAX))*/
 
 /**
  * Compares the given session objects. This function returns @c 0

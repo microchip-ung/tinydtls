@@ -30,6 +30,9 @@
 #elif defined (WITH_ZEPHYR)
 #include "platform-specific/dtls_prng_zephyr.c"
 
+#elif defined (WITH_LMSTAX)
+#include "platform-specific/dtls_prng_lmstax.c"
+
 #elif defined (WITH_POSIX)
 #include "platform-specific/dtls_prng_posix.c"
 

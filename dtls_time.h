@@ -63,6 +63,16 @@ typedef uint32_t clock_time_t;
 
 typedef int64_t clock_time_t;
 
+#elif defined(WITH_LMSTAX)
+
+#include <lm_os.h>
+
+typedef uint64_t clock_time_t;
+
+#ifndef CLOCK_SECOND
+# define CLOCK_SECOND (LM_TICK_SEC(1))
+#endif
+
 #else /* WITH_CONTIKI || RIOT_VERSION */
 
 #ifdef HAVE_TIME_H

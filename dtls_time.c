@@ -64,6 +64,12 @@ dtls_ticks(dtls_tick_t *t) {
   *t = k_uptime_get();
 }
 
+#elif defined(WITH_LMSTAX)
+
+void dtls_clock_init(void) {}
+
+void dtls_ticks(dtls_tick_t *t) { *t = lm_os_ext_time_get(); }
+
 #elif defined(WITH_POSIX)
 
 time_t dtls_clock_offset;

@@ -213,8 +213,20 @@ static inline void free_context(dtls_context_t *context) {
 }
 #endif /* RIOT_VERSION */
 
-#ifdef WITH_POSIX
+#ifdef WITH_LMSTAX
+#include "lm_tinydtls.h"
+static inline dtls_context_t *
+malloc_context(void) {
+  return (dtls_context_t *)lm_tinydtls_mem_alloc(sizeof(dtls_context_t));
+}
 
+static inline void
+free_context(dtls_context_t *context) {
+  lm_tinydtls_mem_free(context);
+}
+#endif /* WITH_LMSTAX */
+
+#ifdef WITH_POSIX
 static inline dtls_context_t *
 malloc_context(void) {
   return (dtls_context_t *)malloc(sizeof(dtls_context_t));
@@ -666,7 +678,7 @@ static void dtls_debug_keyblock(dtls_security_parameters_t *config)
   * see IANA for a full list of types:
   * https://www.iana.org/assignments/tls-parameters/tls-parameters.xml#tls-parameters-7
   */
-static const char *
+static inline const char *
 dtls_handshake_type_to_name(int type)
 {
   switch (type) {
@@ -4667,10 +4679,9 @@ dtls_retransmit(dtls_context_t *context, netq_t *node) {
       netq_insert_node(&context->sendqueue, node);
 
       if (node->type == DTLS_CT_HANDSHAKE) {
-        dtls_handshake_header_t *hs_header = DTLS_HANDSHAKE_HEADER(data);
         dtls_debug("** retransmit handshake packet of type: %s (%i)\n",
-                   dtls_handshake_type_to_name(hs_header->msg_type),
-                   hs_header->msg_type);
+                   dtls_handshake_type_to_name(DTLS_HANDSHAKE_HEADER(data)->msg_type),
+                   DTLS_HANDSHAKE_HEADER(data)->msg_type);
       } else {
         dtls_debug("** retransmit packet\n");
       }

@@ -19,7 +19,7 @@
 #include "peer.h"
 #include "dtls_debug.h"
 
-#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION))
+#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) && !(defined (WITH_LMSTAX))
 void peer_init(void)
 {
 }
@@ -36,6 +36,25 @@ dtls_free_peer(dtls_peer_t *peer) {
   dtls_security_free(peer->security_params[1]);
   free(peer);
 }
+#elif defined (WITH_LMSTAX) 
+#include "lm_tinydtls.h"
+void peer_init(void)
+{
+}
+
+static inline dtls_peer_t *
+dtls_malloc_peer(void) {
+  return (dtls_peer_t *)lm_tinydtls_mem_alloc(sizeof(dtls_peer_t));
+}
+
+void
+dtls_free_peer(dtls_peer_t *peer) {
+  dtls_handshake_free(peer->handshake_params);
+  dtls_security_free(peer->security_params[0]);
+  dtls_security_free(peer->security_params[1]);
+  lm_tinydtls_mem_free(peer);
+}
+
 #elif defined (WITH_CONTIKI) /* WITH_CONTIKI */
 
 #include "memb.h"

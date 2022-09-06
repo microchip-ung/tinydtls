@@ -73,7 +73,7 @@ static void dtls_cipher_context_release(void)
   dtls_mutex_unlock(&cipher_context_mutex);
 }
 
-#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION))
+#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) && !(defined (WITH_LMSTAX))
 void crypto_init(void)
 {
 }
@@ -92,6 +92,27 @@ static dtls_security_parameters_t *dtls_security_malloc(void) {
 
 static void dtls_security_dealloc(dtls_security_parameters_t *security) {
   free(security);
+}
+#elif defined (WITH_LMSTAX)
+#include "lm_tinydtls.h"
+void crypto_init(void)
+{
+}
+
+static dtls_handshake_parameters_t *dtls_handshake_malloc(void) {
+  return lm_tinydtls_mem_alloc(sizeof(dtls_handshake_parameters_t));
+}
+
+static void dtls_handshake_dealloc(dtls_handshake_parameters_t *handshake) {
+  lm_tinydtls_mem_free(handshake);
+}
+
+static dtls_security_parameters_t *dtls_security_malloc(void) {
+  return lm_tinydtls_mem_alloc(sizeof(dtls_security_parameters_t));
+}
+
+static void dtls_security_dealloc(dtls_security_parameters_t *security) {
+  lm_tinydtls_mem_free(security);
 }
 #elif defined (WITH_CONTIKI) /* WITH_CONTIKI */
 

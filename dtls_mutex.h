@@ -52,8 +52,17 @@ typedef int dtls_mutex_t;
 #define dtls_mutex_trylock(a) *(a) = 1
 #define dtls_mutex_unlock(a) *(a) = 0
 
+#elif defined(WITH_LMSTAX)
 
-#else /* ! RIOT_VERSION && ! WITH_CONTIKI && ! WITH_ZEPHYR */
+/* lmstax is single threaded, no mutex required */
+
+typedef int dtls_mutex_t;
+#define DTLS_MUTEX_INITIALIZER 0
+#define dtls_mutex_lock(a) *(a) = 1
+#define dtls_mutex_trylock(a) *(a) = 1
+#define dtls_mutex_unlock(a) *(a) = 0
+
+#else /* ! RIOT_VERSION && ! WITH_CONTIKI && ! WITH_ZEPHYR && ! WITH_LMSTAX*/
 
 #include <pthread.h>
 

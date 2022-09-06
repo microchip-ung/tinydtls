@@ -49,6 +49,13 @@
      && (A)->addr.family == (B)->addr.family                  \
      && ipv6_addr_equal(&((A)->addr.ipv6),&((B)->addr.ipv6))
 #endif
+#elif defined(WITH_LMSTAX)
+#include <lm.h>
+static inline int 
+_dtls_address_equals_impl(const session_t *a,
+			  const session_t *b) {
+  return lmu_memcmp(&(a->addr), &(b->addr), sizeof(a->addr)) == 0;
+}
 #else /* WITH_CONTIKI */
 
 static inline int 
@@ -98,7 +105,7 @@ dtls_session_init(session_t *sess) {
  * for sessions and peers and store a pointer to a session in the peer
  * struct.
  */
-#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION))
+#if !(defined (WITH_CONTIKI)) && !(defined (RIOT_VERSION)) && !(defined (WITH_LMSTAX))
 session_t*
 dtls_new_session(struct sockaddr *addr, socklen_t addrlen) {
   session_t *sess;

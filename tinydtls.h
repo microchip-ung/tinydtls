@@ -34,10 +34,12 @@
 
 #ifndef CONTIKI
 #ifndef RIOT_VERSION
+#ifndef WITH_LMSTAX
 #ifndef WITH_POSIX
 /* TODO: To remove in a future */
 #define WITH_POSIX 1
 #endif /* WITH_POSIX */
+#endif /* WITH_LMSTAX */
 #include "dtls_config.h"
 #endif /* RIOT_VERSION */
 #endif /* CONTIKI */

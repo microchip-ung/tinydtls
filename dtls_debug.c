@@ -40,6 +40,7 @@ typedef int in_port_t;
 #endif /* WITH_ZEPHYR */
 
 #include "global.h"
+#include "dtls_time.h"
 #include "dtls_debug.h"
 
 #ifndef min
@@ -70,10 +71,12 @@ dtls_set_log_level(log_t level) {
   maxlog = level;
 }
 
+#ifndef WITH_LMSTAX
 /* this array has the same order as the type log_t */
 static const char *loglevels[] = {
   "EMRG", "ALRT", "CRIT", "WARN", "NOTE", "INFO", "DEBG"
 };
+#endif /* !WITH_LMSTAX */
 
 #ifdef HAVE_TIME_H
 
@@ -99,6 +102,7 @@ print_timestamp(char *s, size_t len, clock_time_t t) {
 }
 
 #endif /* HAVE_TIME_H */
+
 
 #ifndef NDEBUG
 
@@ -240,6 +244,7 @@ dsrv_print_addr(const session_t *addr, char *buf, size_t len) {
 
 #endif /* NDEBUG */
 
+#ifdef HAVE_VPRINTF
 #ifndef WITH_CONTIKI
 void
 dsrv_log(log_t level, const char *format, ...) {
@@ -263,7 +268,7 @@ dsrv_log(log_t level, const char *format, ...) {
   va_end(ap);
   fflush(log_fd);
 }
-#elif defined (HAVE_VPRINTF) /* WITH_CONTIKI */
+#else /* WITH_CONTIKI */
 void
 dsrv_log(log_t level, char *format, ...) {
   static char timebuf[32];
@@ -283,6 +288,7 @@ dsrv_log(log_t level, char *format, ...) {
   va_end(ap);
 }
 #endif /* WITH_CONTIKI */
+#endif /* HAVE_VPRINTF */
 
 #ifndef NDEBUG
 /** dumps packets in usual hexdump format */

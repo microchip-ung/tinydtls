@@ -49,6 +49,12 @@ static inline void check_stack(void) {
 static inline void check_stack(void) {
 }
 #endif /* CONTIKI_TARGET_MBXXX */
+#elif defined(WITH_LMSTAX)
+
+#define PRINTF(...) LMU_PRINTF(__VA_ARGS__)
+
+static inline void check_stack(void) {
+}
 #else /* WITH_CONTKI */
 #define PRINTF(...)
 
@@ -108,6 +114,23 @@ void dtls_dsrv_log_addr(log_t level, const char *name, const session_t *addr);
 #define dtls_debug(...) LOG_DBG(__VA_ARGS__)
 #define dtls_debug_hexdump(name, buf, length) { LOG_DBG("%s (%zu bytes):", name, length); LOG_HEXDUMP_DBG(buf, length, name); }
 #define dtls_debug_dump(name, buf, length) { LOG_DBG("%s (%zu bytes):", name, length); LOG_HEXDUMP_DBG(buf, length, name); }
+
+#elif defined(WITH_LMSTAX)
+
+#define DTLS_LOG_LEVEL  DTLS_LOG_NOTICE
+#define DTLS_PRINTF(level, prefix, ...) \
+    do {if ((level)<=(DTLS_LOG_LEVEL)) LMU_PRINTF(prefix __VA_ARGS__);} while(0)
+
+#define dtls_emerg(...) DTLS_PRINTF(DTLS_LOG_EMERG, "DTLS_EMERG: ", __VA_ARGS__)
+#define dtls_alert(...) DTLS_PRINTF(DTLS_LOG_ALERT, "DTLS_ALERT: ", __VA_ARGS__)
+#define dtls_crit(...) DTLS_PRINTF(DTLS_LOG_CRIT, "DTLS_CRIT: ", __VA_ARGS__)
+#define dtls_warn(...) DTLS_PRINTF(DTLS_LOG_WARN, "DTLS_WARN: ", __VA_ARGS__)
+#define dtls_notice(...) DTLS_PRINTF(DTLS_LOG_NOTICE, "DTLS_NOTICE: ", __VA_ARGS__)
+#define dtls_info(...) DTLS_PRINTF(DTLS_LOG_INFO, "DTLS_INFO: ", __VA_ARGS__)
+#define dtls_debug(...) DTLS_PRINTF(DTLS_LOG_DEBUG, "DTLS_DEBUG: ", __VA_ARGS__)
+#define dtls_debug_hexdump(name, buf, length) DTLS_PRINTF(DTLS_LOG_DEBUG, "DTLS_DEBUG_HEXDUMP: not implemented\n")
+#define dtls_debug_dump(name, buf, length) DTLS_PRINTF(DTLS_LOG_DEBUG, "DTLS_DEBUG_DUMP: not implemented\n")
+
 #else /* WITH_ZEPHYR */
 #define dtls_emerg(...) dsrv_log(DTLS_LOG_EMERG, __VA_ARGS__)
 #define dtls_alert(...) dsrv_log(DTLS_LOG_ALERT, __VA_ARGS__)
